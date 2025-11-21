@@ -1,13 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+
+import 'package:rimac_app/features/shared/shared.dart';
 
 class RootScreen extends StatelessWidget {
-  const RootScreen({super.key});
+  final StatefulNavigationShell navigationShell;
+
+  const RootScreen({super.key, required this.navigationShell});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Rimac App Bar')),
-      body: const Center(child: Text('Rimac App Body')),
+      body: navigationShell,
+      bottomNavigationBar: CustomBottomNavigationBar(
+        navigationShell: navigationShell,
+      ),
     );
   }
 }
