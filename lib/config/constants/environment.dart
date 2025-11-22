@@ -4,4 +4,6 @@ class Environment {
   static Future<void> init() async {
     await dotenv.load(fileName: ".env");
   }
+
+  static String apiUrl = dotenv.env['API_URL'] ?? 'No está configurada la API';
 }
