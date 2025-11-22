@@ -30,6 +30,39 @@ class _ChatViewState extends State<_ChatView> {
   late final types.InMemoryChatController _chatController;
   final Set<String> _insertedMessageIds = {};
 
+  // Map of avatar images for known users (fallback to initials if absent)
+  final Map<String, String> _avatarUrls = {
+    ChatCubit.kUserId:
+        'https://images.pexels.com/photos/733872/pexels-photo-733872.jpeg',
+    ChatCubit.kBotId:
+        'https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg',
+  };
+
+  Future<types.User> _resolveUser(types.UserID id) async {
+    if (id == ChatCubit.kUserId) {
+      return types.User(id: id, name: 'Tú');
+    } else if (id == ChatCubit.kBotId) {
+      return types.User(id: id, name: 'Asistente RIMAC');
+    }
+
+    return types.User(id: id, name: 'Usuario');
+  }
+
+  Widget _buildAvatar(types.User user) {
+    final image = (_avatarUrls[user.id] ?? '').trim();
+    if (image.isNotEmpty) {
+      return CircleAvatar(radius: 20, backgroundImage: NetworkImage(image));
+    }
+
+    return CircleAvatar(
+      radius: 20,
+      child: Text(
+        (user.name ?? '?').substring(0, 1).toUpperCase(),
+        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+      ),
+    );
+  }
+
   @override
   void initState() {
     super.initState();
@@ -96,25 +129,85 @@ class _ChatViewState extends State<_ChatView> {
                     return Chat(
                       theme: chatTheme,
                       builders: types.Builders(
-                        textMessageBuilder:
+                        chatMessageBuilder:
                             (
                               BuildContext ctx,
                               dynamic message,
-                              int index, {
+                              int index,
+                              animation,
+                              child, {
+                              bool? isRemoved,
                               required bool isSentByMe,
-                              dynamic groupStatus,
+                              types.MessageGroupStatus? groupStatus,
                             }) {
-                              return SimpleTextMessage(
-                                message: message,
-                                index: index,
-                                sentBackgroundColor: AppTheme.rimacRed,
-                                receivedBackgroundColor: AppTheme.mediumGray,
-                                sentTextStyle: const TextStyle(
-                                  color: Colors.white,
-                                ),
-                                receivedTextStyle: const TextStyle(
-                                  color: AppTheme.darkGray,
-                                ),
+                              return FutureBuilder<types.User>(
+                                future: _resolveUser(message.authorId),
+                                builder: (context, snapshot) {
+                                  if (!snapshot.hasData) {
+                                    return ChatMessage(
+                                      message: message,
+                                      index: index,
+                                      animation: animation,
+                                      isRemoved: isRemoved,
+                                      groupStatus: groupStatus,
+                                      child: child,
+                                    );
+                                  }
+
+                                  final user = snapshot.data!;
+
+                                  // Determine a custom child for text messages so
+                                  // we can control bubble colors per author.
+                                  final bool isBot =
+                                      message.authorId == ChatCubit.kBotId;
+
+                                  Widget messageChild = child;
+                                  if (message is types.TextMessage) {
+                                    messageChild = SimpleTextMessage(
+                                      message: message,
+                                      index: index,
+                                      // User (sent) keeps rimacRed
+                                      sentBackgroundColor: AppTheme.rimacRed,
+                                      // Bot messages get a more visible vibrant pink
+                                      receivedBackgroundColor: isBot
+                                          ? AppTheme.vibrantPink
+                                          : AppTheme.mediumGray,
+                                      sentTextStyle: const TextStyle(
+                                        color: Colors.white,
+                                      ),
+                                      receivedTextStyle: TextStyle(
+                                        color: isBot
+                                            ? Colors.white
+                                            : AppTheme.darkGray,
+                                      ),
+                                    );
+                                  }
+
+                                  return ChatMessage(
+                                    message: message,
+                                    index: index,
+                                    animation: animation,
+                                    isRemoved: isRemoved,
+                                    groupStatus: groupStatus,
+                                    leadingWidget: !isSentByMe
+                                        ? Padding(
+                                            padding: const EdgeInsets.only(
+                                              right: 8.0,
+                                            ),
+                                            child: _buildAvatar(user),
+                                          )
+                                        : null,
+                                    trailingWidget: isSentByMe
+                                        ? Padding(
+                                            padding: const EdgeInsets.only(
+                                              left: 8.0,
+                                            ),
+                                            child: _buildAvatar(user),
+                                          )
+                                        : null,
+                                    child: messageChild,
+                                  );
+                                },
                               );
                             },
                       ),
@@ -137,13 +230,7 @@ class _ChatViewState extends State<_ChatView> {
                         // Delegar al Cubit
                         context.read<ChatCubit>().sendMessage(text);
                       },
-                      resolveUser: (types.UserID id) async {
-                        if (id == ChatCubit.kUserId) {
-                          return types.User(id: id, name: 'Tú');
-                        } else {
-                          return types.User(id: id, name: 'Asistente RIMAC');
-                        }
-                      },
+                      resolveUser: _resolveUser,
                     );
                   },
                 ),
