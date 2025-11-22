@@ -15,6 +15,7 @@ class LoginState extends Equatable {
   final IdentityDocumentType docType;
   final String docNumber;
   final String password;
+  final bool passwordObscured;
   final String errorMessage;
 
   const LoginState({
@@ -22,6 +23,7 @@ class LoginState extends Equatable {
     this.docType = IdentityDocumentType.dni,
     this.docNumber = '',
     this.password = '',
+    this.passwordObscured = true,
     this.errorMessage = '',
   });
 
@@ -39,6 +41,7 @@ class LoginState extends Equatable {
     docType,
     docNumber,
     password,
+    passwordObscured,
     errorMessage,
   ];
 
@@ -47,6 +50,7 @@ class LoginState extends Equatable {
     IdentityDocumentType? docType,
     String? docNumber,
     String? password,
+    bool? passwordObscured,
     String? errorMessage,
   }) {
     return LoginState(
@@ -54,6 +58,7 @@ class LoginState extends Equatable {
       docType: docType ?? this.docType,
       docNumber: docNumber ?? this.docNumber,
       password: password ?? this.password,
+      passwordObscured: passwordObscured ?? this.passwordObscured,
       errorMessage: errorMessage ?? this.errorMessage,
     );
   }

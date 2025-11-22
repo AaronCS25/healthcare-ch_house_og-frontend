@@ -23,6 +23,10 @@ class LoginCubit extends Cubit<LoginState> {
     emit(state.copyWith(password: password));
   }
 
+  void togglePasswordObscured() {
+    emit(state.copyWith(passwordObscured: !state.passwordObscured));
+  }
+
   Future<void> onIdentitySubmitted() async {
     if (state.checkingIdentity) return;
     emit(

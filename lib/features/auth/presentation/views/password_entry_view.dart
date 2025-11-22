@@ -106,12 +106,17 @@ class _PasswordEntryViewBody extends StatelessWidget {
                           const SizedBox(height: 24),
                           CustomTextFormField(
                             hintText: "Contraseña",
+                            obscureText: state.passwordObscured,
                             onChanged: context
                                 .read<LoginCubit>()
                                 .onPasswordChanged,
                             suffixIcon: IconButton(
-                              onPressed: () {},
-                              icon: const Icon(Icons.visibility),
+                              onPressed: context
+                                  .read<LoginCubit>()
+                                  .togglePasswordObscured,
+                              icon: state.passwordObscured
+                                  ? const Icon(Icons.visibility_off)
+                                  : const Icon(Icons.visibility),
                             ),
                           ),
                           const SizedBox(height: 24),
