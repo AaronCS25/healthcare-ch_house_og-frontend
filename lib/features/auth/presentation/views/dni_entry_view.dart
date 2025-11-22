@@ -118,7 +118,9 @@ class _DniEntryViewBody extends StatelessWidget {
                             width: double.infinity,
                             height: 48,
                             child: FilledButton(
-                              onPressed: state.checkingIdentity
+                              onPressed:
+                                  state.checkingIdentity ||
+                                      state.docNumber.isEmpty
                                   ? null
                                   : () {
                                       FocusManager.instance.primaryFocus

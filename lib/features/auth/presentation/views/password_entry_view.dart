@@ -24,6 +24,7 @@ class _PasswordEntryViewBody extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
     final size = MediaQuery.of(context).size;
     final double headerHeight = size.height * 0.48;
+    final paddingTop = MediaQuery.of(context).padding.top;
 
     return BlocBuilder<LoginCubit, LoginState>(
       builder: (context, state) {
@@ -148,6 +149,20 @@ class _PasswordEntryViewBody extends StatelessWidget {
                       ),
                     ),
                   ],
+                ),
+              ),
+            ),
+            Positioned(
+              top: paddingTop + 16,
+              left: 16,
+              child: CircleAvatar(
+                backgroundColor: Colors.white,
+                radius: 24,
+                child: IconButton(
+                  icon: const Icon(Icons.arrow_back, color: Colors.black),
+                  onPressed: () {
+                    context.read<LoginCubit>().returnToIdentityInput();
+                  },
                 ),
               ),
             ),

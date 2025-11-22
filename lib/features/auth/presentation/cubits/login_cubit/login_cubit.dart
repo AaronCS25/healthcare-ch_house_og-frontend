@@ -33,6 +33,7 @@ class LoginCubit extends Cubit<LoginState> {
         status: LoginStatus.initial,
         docNumber: '',
         password: '',
+        passwordObscured: true,
         errorMessage: '',
       ),
     );
