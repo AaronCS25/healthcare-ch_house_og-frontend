@@ -7,7 +7,7 @@ class ChatDatasourceImpl implements ChatDatasource {
   const ChatDatasourceImpl({required this.dio});
 
   @override
-  Future<ChatMessage> sendMessage(String message) async {
+  Future<ChatMessageEntity> sendMessage(String message) async {
     try {
       final response = await dio.post('/llm/ask', data: {'message': message});
       final llmResponse = LlmResponseModel.fromJson(response.data);

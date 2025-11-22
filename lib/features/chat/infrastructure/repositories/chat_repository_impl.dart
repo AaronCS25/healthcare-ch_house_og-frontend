@@ -6,7 +6,7 @@ class ChatRepositoryImpl implements ChatRepository {
   const ChatRepositoryImpl(this.datasource);
 
   @override
-  Future<ChatMessage> sendMessage(String message) {
+  Future<ChatMessageEntity> sendMessage(String message) {
     return datasource.sendMessage(message);
   }
 }

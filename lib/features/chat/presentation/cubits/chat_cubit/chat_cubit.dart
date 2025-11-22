@@ -57,7 +57,7 @@ class ChatCubit extends Cubit<ChatState> {
     }
   }
 
-  types.TextMessage _mapDomainToUi(ChatMessage domainMsg) {
+  types.TextMessage _mapDomainToUi(ChatMessageEntity domainMsg) {
     return types.TextMessage(
       id: domainMsg.id,
       text: domainMsg.text,
