@@ -27,6 +27,17 @@ class LoginCubit extends Cubit<LoginState> {
     emit(state.copyWith(passwordObscured: !state.passwordObscured));
   }
 
+  void returnToIdentityInput() {
+    emit(
+      state.copyWith(
+        status: LoginStatus.initial,
+        docNumber: '',
+        password: '',
+        errorMessage: '',
+      ),
+    );
+  }
+
   Future<void> onIdentitySubmitted() async {
     if (state.checkingIdentity) return;
     emit(

@@ -62,10 +62,19 @@ class _LoginScreenContent extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<LoginCubit, LoginState>(
       builder: (context, state) {
-        if (state.identityVerified || state.isSubmitting || state.isSuccess) {
-          return const PasswordEntryView();
-        }
-        return const DniEntryView();
+        final isPasswordView =
+            state.identityVerified || state.isSubmitting || state.isSuccess;
+
+        return PopScope(
+          canPop: !isPasswordView,
+          onPopInvokedWithResult: (didPop, result) {
+            if (didPop) return;
+            context.read<LoginCubit>().returnToIdentityInput();
+          },
+          child: isPasswordView
+              ? const PasswordEntryView()
+              : const DniEntryView(),
+        );
       },
     );
   }
