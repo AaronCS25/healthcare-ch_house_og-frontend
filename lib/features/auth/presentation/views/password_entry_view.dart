@@ -126,9 +126,13 @@ class _PasswordEntryViewBody extends StatelessWidget {
                             child: FilledButton(
                               onPressed: state.isSubmitting
                                   ? null
-                                  : context
-                                        .read<LoginCubit>()
-                                        .onPasswordSubmitted,
+                                  : () {
+                                      FocusManager.instance.primaryFocus
+                                          ?.unfocus();
+                                      context
+                                          .read<LoginCubit>()
+                                          .onPasswordSubmitted();
+                                    },
                               child: const Text("Iniciar Sesión"),
                             ),
                           ),

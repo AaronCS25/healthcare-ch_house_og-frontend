@@ -11,23 +11,44 @@ class LoginScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) =>
-          LoginCubit(authCubit: ServiceLocator.get<AuthCubit>()),
-      child: BlocListener<AuthCubit, AuthState>(
-        listener: (context, state) {
-          if (state.status == AuthStatus.unauthenticated &&
-              state.errorMessage.isNotEmpty) {
-            SnackBarHelper.showError(context, message: state.errorMessage);
-            context.read<AuthCubit>().reset();
-          }
+      create: (context) => LoginCubit(
+        authCubit: ServiceLocator.get<AuthCubit>(),
+        repository: ServiceLocator.get<AuthRepository>(),
+      ),
+      child: MultiBlocListener(
+        listeners: [
+          BlocListener<AuthCubit, AuthState>(
+            listener: (context, state) {
+              if (state.status == AuthStatus.unauthenticated &&
+                  state.errorMessage.isNotEmpty) {
+                SnackBarHelper.showError(context, message: state.errorMessage);
+                context.read<AuthCubit>().reset();
+              }
 
-          if (state.status == AuthStatus.authenticated) {
-            SnackBarHelper.showSuccess(
-              context,
-              message: 'Inicio de sesión exitoso!',
-            );
-          }
-        },
+              if (state.status == AuthStatus.authenticated) {
+                SnackBarHelper.showSuccess(
+                  context,
+                  message: 'Inicio de sesión exitoso!',
+                );
+              }
+            },
+          ),
+          BlocListener<LoginCubit, LoginState>(
+            listenWhen: (previous, current) =>
+                previous.status != current.status,
+            listener: (context, state) {
+              if (state.identityNotVerified) {
+                HelpDialog.show(
+                  context,
+                  title: 'Estamos aquí para ayudarte',
+                  message:
+                      'Verifica tu documento, si el error persiste llámanos al (01) 411-1111.',
+                );
+                context.read<LoginCubit>().resetStatus();
+              }
+            },
+          ),
+        ],
         child: const _LoginScreenContent(),
       ),
     );

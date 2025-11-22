@@ -6,8 +6,10 @@ part 'login_state.dart';
 
 class LoginCubit extends Cubit<LoginState> {
   final AuthCubit authCubit;
+  final AuthRepository repository;
 
-  LoginCubit({required this.authCubit}) : super(const LoginState());
+  LoginCubit({required this.authCubit, required this.repository})
+    : super(const LoginState());
 
   void onDocTypeChanged(IdentityDocumentType? docType) {
     emit(state.copyWith(docType: docType));
@@ -28,12 +30,22 @@ class LoginCubit extends Cubit<LoginState> {
     );
 
     try {
-      await Future.delayed(const Duration(seconds: 2));
-
-      // TODO: CALL API TO CHECK IDENTITY DOCUMENT
-      // final haveInsurance = ...;
-
+      final haveInsurance = await repository.validateIdentityDocument(
+        state.docType,
+        state.docNumber,
+      );
       if (isClosed) return;
+
+      if (!haveInsurance) {
+        emit(
+          state.copyWith(
+            status: LoginStatus.identityNotVerified,
+            errorMessage: '',
+          ),
+        );
+        return;
+      }
+
       emit(
         state.copyWith(status: LoginStatus.identityVerified, errorMessage: ''),
       );
@@ -49,8 +61,6 @@ class LoginCubit extends Cubit<LoginState> {
     if (state.isSubmitting) return;
     emit(state.copyWith(status: LoginStatus.submitting, errorMessage: ''));
     try {
-      await Future.delayed(const Duration(seconds: 2));
-
       await authCubit.login(state.docNumber, state.password);
 
       if (isClosed) return;
@@ -61,5 +71,9 @@ class LoginCubit extends Cubit<LoginState> {
         state.copyWith(status: LoginStatus.failure, errorMessage: e.toString()),
       );
     }
+  }
+
+  void resetStatus() {
+    emit(state.copyWith(status: LoginStatus.initial, errorMessage: ''));
   }
 }

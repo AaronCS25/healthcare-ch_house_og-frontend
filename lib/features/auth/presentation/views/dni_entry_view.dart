@@ -120,9 +120,13 @@ class _DniEntryViewBody extends StatelessWidget {
                             child: FilledButton(
                               onPressed: state.checkingIdentity
                                   ? null
-                                  : context
-                                        .read<LoginCubit>()
-                                        .onIdentitySubmitted,
+                                  : () {
+                                      FocusManager.instance.primaryFocus
+                                          ?.unfocus();
+                                      context
+                                          .read<LoginCubit>()
+                                          .onIdentitySubmitted();
+                                    },
                               child: const Text("Continuar"),
                             ),
                           ),

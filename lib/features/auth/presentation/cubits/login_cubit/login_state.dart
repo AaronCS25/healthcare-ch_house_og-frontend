@@ -4,6 +4,7 @@ enum LoginStatus {
   initial,
   checkingIdentity,
   identityVerified,
+  identityNotVerified,
   submitting,
   success,
   failure,
@@ -26,6 +27,7 @@ class LoginState extends Equatable {
 
   bool get checkingIdentity => status == LoginStatus.checkingIdentity;
   bool get identityVerified => status == LoginStatus.identityVerified;
+  bool get identityNotVerified => status == LoginStatus.identityNotVerified;
 
   bool get isSubmitting => status == LoginStatus.submitting;
   bool get isSuccess => status == LoginStatus.success;
