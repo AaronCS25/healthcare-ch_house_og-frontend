@@ -34,6 +34,13 @@ class _ChatViewState extends State<_ChatView> {
   void initState() {
     super.initState();
     _chatController = types.InMemoryChatController();
+    _chatController.insertMessage(
+      const types.Message.text(
+        id: 'first-ai',
+        authorId: ChatCubit.kBotId,
+        text: "¡Hola! Soy el asistente de RIMAC. ¿En qué puedo ayudarte hoy?",
+      ),
+    );
   }
 
   @override
@@ -130,9 +137,7 @@ class _ChatViewState extends State<_ChatView> {
                         // Delegar al Cubit
                         context.read<ChatCubit>().sendMessage(text);
                       },
-
                       resolveUser: (types.UserID id) async {
-                        // Definir usuarios
                         if (id == ChatCubit.kUserId) {
                           return types.User(id: id, name: 'Tú');
                         } else {
