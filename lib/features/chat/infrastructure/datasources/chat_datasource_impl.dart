@@ -1,15 +1,17 @@
 import 'package:dio/dio.dart';
+import 'package:rimac_app/config/config.dart';
 import 'package:rimac_app/features/chat/chat.dart';
 
 class ChatDatasourceImpl implements ChatDatasource {
-  final Dio dio;
-
-  const ChatDatasourceImpl({required this.dio});
+  final dio = Dio(BaseOptions(baseUrl: Environment.llmUrl));
 
   @override
   Future<ChatMessageEntity> sendMessage(String message) async {
     try {
-      final response = await dio.post('/llm/ask', data: {'message': message});
+      final response = await dio.post(
+        '/agent/route',
+        data: {'user_id': 'pochoni', 'message': message},
+      );
       final llmResponse = LlmResponseModel.fromJson(response.data);
       final chatMessage = ChatMapper().fromLlmResponse(llmResponse);
       return chatMessage;

@@ -6,4 +6,5 @@ class Environment {
   }
 
   static String apiUrl = dotenv.env['API_URL'] ?? 'No está configurada la API';
+  static String llmUrl = dotenv.env['LLM_URL'] ?? 'No está configurada la LLM';
 }

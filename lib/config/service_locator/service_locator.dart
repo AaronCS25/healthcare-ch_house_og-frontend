@@ -36,7 +36,7 @@ class ServiceLocator {
     });
 
     _getIt.registerLazySingleton<ChatRepository>(
-      () => ChatRepositoryImpl(ChatDatasourceImpl(dio: get<Dio>())),
+      () => ChatRepositoryImpl(ChatDatasourceImpl()),
     );
   }
 }
