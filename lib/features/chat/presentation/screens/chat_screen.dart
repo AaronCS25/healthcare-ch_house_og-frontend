@@ -31,10 +31,8 @@ class _ChatViewState extends State<_ChatView> {
   final Set<String> _insertedMessageIds = {};
 
   final Map<String, String> _avatarUrls = {
-    ChatCubit.kUserId:
-        'https://images.pexels.com/photos/733872/pexels-photo-733872.jpeg',
-    ChatCubit.kBotId:
-        'https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg',
+    ChatCubit.kUserId: 'assets/images/asistente_rimac.png',
+    ChatCubit.kBotId: 'assets/images/asistente_rimac.png',
   };
 
   Future<types.User> _resolveUser(types.UserID id) async {
@@ -49,15 +47,34 @@ class _ChatViewState extends State<_ChatView> {
 
   Widget _buildAvatar(types.User user) {
     final image = (_avatarUrls[user.id] ?? '').trim();
+
     if (image.isNotEmpty) {
-      return CircleAvatar(radius: 20, backgroundImage: NetworkImage(image));
+      ImageProvider? backgroundImage;
+
+      if (image.startsWith('http://') || image.startsWith('https://')) {
+        backgroundImage = NetworkImage(image);
+      } else {
+        backgroundImage = AssetImage(image);
+      }
+
+      return CircleAvatar(
+        radius: 20,
+        backgroundColor: Colors.grey[200],
+        backgroundImage: backgroundImage,
+        onBackgroundImageError: (_, _) => debugPrint('Error cargando avatar'),
+      );
     }
 
     return CircleAvatar(
       radius: 20,
+      backgroundColor: Colors.grey[200],
       child: Text(
         (user.name ?? '?').substring(0, 1).toUpperCase(),
-        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+        style: const TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.bold,
+          color: Colors.black87,
+        ),
       ),
     );
   }
