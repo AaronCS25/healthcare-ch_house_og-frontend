@@ -30,7 +30,6 @@ class _ChatViewState extends State<_ChatView> {
   late final types.InMemoryChatController _chatController;
   final Set<String> _insertedMessageIds = {};
 
-  // Map of avatar images for known users (fallback to initials if absent)
   final Map<String, String> _avatarUrls = {
     ChatCubit.kUserId:
         'https://images.pexels.com/photos/733872/pexels-photo-733872.jpeg',
@@ -87,11 +86,7 @@ class _ChatViewState extends State<_ChatView> {
     return Scaffold(
       appBar: AppBar(title: const Text('Chat')),
       body: BlocListener<ChatCubit, ChatState>(
-        // Escuchar cambios del Cubit y sincronizar con el controller
         listener: (context, state) {
-          // Insert the last message when new messages arrive. We handle
-          // both loading (the user's message) and success (bot reply) and
-          // guard against inserting duplicates by tracking IDs.
           if (state.messages.isNotEmpty) {
             final lastMessage = state.messages.last;
             if (!_insertedMessageIds.contains(lastMessage.id)) {
@@ -100,7 +95,6 @@ class _ChatViewState extends State<_ChatView> {
             }
           }
 
-          // Show errors
           if (state.isFailure) {
             SnackBarHelper.showError(context, message: state.errorMessage);
           }
@@ -109,7 +103,6 @@ class _ChatViewState extends State<_ChatView> {
           builder: (context, state) {
             return Stack(
               children: [
-                // Derive a chat theme from the app theme and override brand colors
                 Builder(
                   builder: (context) {
                     final brightness = MediaQuery.platformBrightnessOf(context);
@@ -156,32 +149,75 @@ class _ChatViewState extends State<_ChatView> {
 
                                   final user = snapshot.data!;
 
-                                  // Determine a custom child for text messages so
-                                  // we can control bubble colors per author.
                                   final bool isBot =
                                       message.authorId == ChatCubit.kBotId;
 
                                   Widget messageChild = child;
                                   if (message is types.TextMessage) {
+                                    final isDarkMode =
+                                        Theme.of(context).brightness ==
+                                        Brightness.dark;
+
                                     messageChild = SimpleTextMessage(
                                       message: message,
                                       index: index,
-                                      // User (sent) keeps rimacRed
+
                                       sentBackgroundColor: AppTheme.rimacRed,
-                                      // Bot messages get a more visible vibrant pink
-                                      receivedBackgroundColor: isBot
-                                          ? AppTheme.vibrantPink
-                                          : AppTheme.mediumGray,
                                       sentTextStyle: const TextStyle(
                                         color: Colors.white,
+                                        height: 1.4,
                                       ),
+
+                                      receivedBackgroundColor: isBot
+                                          ? (isDarkMode
+                                                ? AppTheme.darkBgSecondary
+                                                : AppTheme.mediumGray)
+                                          : AppTheme.mediumGray,
+
                                       receivedTextStyle: TextStyle(
-                                        color: isBot
-                                            ? Colors.white
+                                        color: isDarkMode
+                                            ? AppTheme.white
                                             : AppTheme.darkGray,
+                                        height: 1.4,
                                       ),
                                     );
                                   }
+
+                                  final String displayName;
+                                  if (message.authorId == ChatCubit.kUserId) {
+                                    displayName = 'yo';
+                                  } else if (message.authorId ==
+                                      ChatCubit.kBotId) {
+                                    displayName = 'bot';
+                                  } else {
+                                    displayName = (user.name ?? 'usuario')
+                                        .toLowerCase();
+                                  }
+
+                                  final Widget nameWidget = Padding(
+                                    padding: const EdgeInsets.only(bottom: 6.0),
+                                    child: Align(
+                                      alignment: isSentByMe
+                                          ? Alignment.centerRight
+                                          : Alignment.centerLeft,
+                                      child: Text(
+                                        displayName,
+                                        style: const TextStyle(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w600,
+                                          color: Color(0xFF6B7280),
+                                        ),
+                                      ),
+                                    ),
+                                  );
+
+                                  final Widget composedChild = Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    crossAxisAlignment: isSentByMe
+                                        ? CrossAxisAlignment.end
+                                        : CrossAxisAlignment.start,
+                                    children: [nameWidget, messageChild],
+                                  );
 
                                   return ChatMessage(
                                     message: message,
@@ -205,7 +241,7 @@ class _ChatViewState extends State<_ChatView> {
                                             child: _buildAvatar(user),
                                           )
                                         : null,
-                                    child: messageChild,
+                                    child: composedChild,
                                   );
                                 },
                               );
@@ -215,7 +251,6 @@ class _ChatViewState extends State<_ChatView> {
                       currentUserId: ChatCubit.kUserId,
 
                       onMessageSend: (text) {
-                        // Prevent sending while waiting for a response
                         if (state.isLoading) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
@@ -227,7 +262,6 @@ class _ChatViewState extends State<_ChatView> {
                           return;
                         }
 
-                        // Delegar al Cubit
                         context.read<ChatCubit>().sendMessage(text);
                       },
                       resolveUser: _resolveUser,
@@ -235,7 +269,6 @@ class _ChatViewState extends State<_ChatView> {
                   },
                 ),
 
-                // Loading bar at top while waiting for bot response
                 if (state.isLoading)
                   Positioned(
                     bottom: MediaQuery.of(context).viewInsets.bottom + 72,

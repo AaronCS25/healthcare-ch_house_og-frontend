@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
 
 class AppTheme {
-  // Primary Colors
   static const Color rimacRed = Color(0xFFE5233D);
   static const Color vibrantPink = Color(0xFFFF0055);
   static const Color rimacRedHover = Color(0xFFC41B2E);
   static const Color rimacRedLight = Color(0xFFFBE8EC);
 
-  // Neutral Colors (Light)
   static const Color white = Color(0xFFFFFFFF);
   static const Color lightGray = Color(0xFFF9FAFB);
   static const Color mediumGray = Color(0xFFF3F4F6);
@@ -15,13 +13,11 @@ class AppTheme {
   static const Color darkGray = Color(0xFF1F2937);
   static const Color darkGrayMuted = Color(0xFF374151);
 
-  // Neutral Colors (Dark)
   static const Color darkBgPrimary = Color(0xFF111827);
   static const Color darkBgSecondary = Color(0xFF1F2937);
   static const Color darkTextPrimary = Color(0xFFF3F4F6);
   static const Color darkTextSecondary = Color(0xFF9CA3AF);
 
-  // Status Colors
   static const Color successGreen = Color(0xFF10B981);
   static const Color warningOrange = Color(0xFFF59E0B);
   static const Color errorRed = Color(0xFFEF4444);
@@ -144,6 +140,30 @@ class AppTheme {
         error: errorRed,
         tertiary: mediumGray,
       ),
+      navigationBarTheme: NavigationBarThemeData(
+        backgroundColor: white,
+        indicatorColor: rimacRed,
+        iconTheme: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
+            return const IconThemeData(color: white);
+          }
+          return const IconThemeData(color: gray500);
+        }),
+        labelTextStyle: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
+            return const TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: rimacRed,
+            );
+          }
+          return const TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w500,
+            color: gray500,
+          );
+        }),
+      ),
       textTheme: _buildTextTheme(darkGray, gray500),
       dividerTheme: const DividerThemeData(color: lightGray, thickness: 1),
     );
@@ -163,6 +183,30 @@ class AppTheme {
         onSurface: darkTextPrimary,
         error: errorRed,
         tertiary: darkGrayMuted,
+      ),
+      navigationBarTheme: NavigationBarThemeData(
+        backgroundColor: darkBgSecondary,
+        indicatorColor: rimacRed,
+        iconTheme: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
+            return const IconThemeData(color: white);
+          }
+          return const IconThemeData(color: darkTextSecondary);
+        }),
+        labelTextStyle: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
+            return const TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: rimacRed,
+            );
+          }
+          return const TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w500,
+            color: gray500,
+          );
+        }),
       ),
       textTheme: _buildTextTheme(darkTextPrimary, darkTextSecondary),
       dividerTheme: const DividerThemeData(color: darkGrayMuted, thickness: 1),
