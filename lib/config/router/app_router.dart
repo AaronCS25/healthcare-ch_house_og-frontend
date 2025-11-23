@@ -1,10 +1,12 @@
 import 'package:go_router/go_router.dart';
 
+import 'package:rimac_app/features/me/me.dart';
 import 'package:rimac_app/config/config.dart';
 import 'package:rimac_app/features/auth/auth.dart';
 import 'package:rimac_app/features/chat/chat.dart';
 import 'package:rimac_app/features/shared/shared.dart';
-import 'package:rimac_app/features/profile/profile.dart';
+import 'package:rimac_app/features/welfare/welfare.dart';
+import 'package:rimac_app/features/insurance/insurance.dart';
 import 'package:rimac_app/features/dashboard/dashboard.dart';
 
 final appRouter = GoRouter(
@@ -56,6 +58,14 @@ final appRouter = GoRouter(
         StatefulShellBranch(
           routes: [
             GoRoute(
+              path: '/insurance',
+              builder: (context, state) => const InsuranceScreen(),
+            ),
+          ],
+        ),
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
               path: '/chat',
               builder: (context, state) => const ChatScreen(),
             ),
@@ -63,9 +73,14 @@ final appRouter = GoRouter(
         ),
         StatefulShellBranch(
           routes: [
+            GoRoute(path: '/me', builder: (context, state) => const MeScreen()),
+          ],
+        ),
+        StatefulShellBranch(
+          routes: [
             GoRoute(
-              path: '/profile',
-              builder: (context, state) => const ProfileScreen(),
+              path: '/welfare',
+              builder: (context, state) => const WelfareScreen(),
             ),
           ],
         ),

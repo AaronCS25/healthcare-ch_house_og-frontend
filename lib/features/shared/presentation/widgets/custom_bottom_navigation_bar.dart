@@ -15,7 +15,12 @@ class CustomBottomNavigationBar extends StatelessWidget {
         const NavigationDestination(
           icon: Icon(Icons.home_outlined),
           selectedIcon: Icon(Icons.home),
-          label: 'Home',
+          label: 'Inicio',
+        ),
+        const NavigationDestination(
+          icon: Icon(Icons.health_and_safety_outlined),
+          selectedIcon: Icon(Icons.health_and_safety),
+          label: 'Seguros',
         ),
         const NavigationDestination(
           icon: Icon(Icons.chat_bubble_outline),
@@ -23,9 +28,14 @@ class CustomBottomNavigationBar extends StatelessWidget {
           label: 'AI Chat',
         ),
         const NavigationDestination(
-          icon: Icon(Icons.person_outline_rounded),
-          selectedIcon: Icon(Icons.person_rounded),
-          label: 'Profile',
+          icon: Icon(Icons.shopping_bag_outlined),
+          selectedIcon: Icon(Icons.shopping_bag),
+          label: 'Para mí',
+        ),
+        const NavigationDestination(
+          icon: Icon(Icons.wallet_giftcard_outlined),
+          selectedIcon: Icon(Icons.wallet_giftcard),
+          label: 'Bienestar',
         ),
       ],
     );
