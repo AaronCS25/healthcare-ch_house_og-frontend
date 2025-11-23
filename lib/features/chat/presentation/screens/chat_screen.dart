@@ -31,6 +31,7 @@ class _ChatView extends StatefulWidget {
 
 class _ChatViewState extends State<_ChatView> {
   late final types.InMemoryChatController _chatController;
+  final TextEditingController _textController = TextEditingController();
   final Set<String> _insertedMessageIds = {};
 
   final Map<String, String> _avatarUrls = {
@@ -98,6 +99,7 @@ class _ChatViewState extends State<_ChatView> {
   @override
   void dispose() {
     _chatController.dispose();
+    _textController.dispose();
     super.dispose();
   }
 
@@ -182,6 +184,137 @@ class _ChatViewState extends State<_ChatView> {
                                         topPadding: 20,
                                       );
                                     },
+                                composerBuilder: (context) {
+                                  return Positioned(
+                                    bottom: 0,
+                                    left: 0,
+                                    right: 0,
+                                    child: Container(
+                                      color: Colors.transparent,
+                                      padding: EdgeInsets.only(
+                                        left: 16,
+                                        right: 16,
+                                        bottom:
+                                            MediaQuery.of(
+                                              context,
+                                            ).padding.bottom +
+                                            16,
+                                        top: 8,
+                                      ),
+                                      child: Row(
+                                        children: [
+                                          Expanded(
+                                            child: Container(
+                                              decoration: BoxDecoration(
+                                                color: isDark
+                                                    ? const Color(0xFF2C2C2C)
+                                                    : Colors.white,
+                                                borderRadius:
+                                                    BorderRadius.circular(24),
+                                                border: Border.all(
+                                                  color: isDark
+                                                      ? Colors.transparent
+                                                      : Colors.grey.shade300,
+                                                  width: 1,
+                                                ),
+                                                boxShadow: [
+                                                  BoxShadow(
+                                                    color: Colors.black
+                                                        .withValues(
+                                                          alpha: 0.05,
+                                                        ),
+                                                    blurRadius: 10,
+                                                    offset: const Offset(0, 4),
+                                                  ),
+                                                ],
+                                              ),
+                                              child: TextField(
+                                                controller:
+                                                    _textController, // ⬅️ Usa el controller
+                                                style: TextStyle(
+                                                  color: isDark
+                                                      ? Colors.white
+                                                      : Colors.black87,
+                                                ),
+                                                decoration: InputDecoration(
+                                                  hintText:
+                                                      'Escribe un mensaje...',
+                                                  hintStyle: TextStyle(
+                                                    color: isDark
+                                                        ? Colors.white54
+                                                        : Colors.grey,
+                                                  ),
+                                                  border: InputBorder.none,
+                                                  contentPadding:
+                                                      const EdgeInsets.symmetric(
+                                                        horizontal: 20,
+                                                        vertical: 12,
+                                                      ),
+                                                  isDense: true,
+                                                ),
+                                                textCapitalization:
+                                                    TextCapitalization
+                                                        .sentences,
+                                                keyboardType:
+                                                    TextInputType.multiline,
+                                                maxLines: null,
+                                                onSubmitted: (_) {
+                                                  final text = _textController
+                                                      .text
+                                                      .trim();
+                                                  if (text.isNotEmpty &&
+                                                      !state.isLoading) {
+                                                    context
+                                                        .read<ChatCubit>()
+                                                        .sendMessage(text);
+                                                    _textController.clear();
+                                                  }
+                                                },
+                                              ),
+                                            ),
+                                          ),
+                                          const SizedBox(width: 12),
+                                          Container(
+                                            height: 48,
+                                            width: 48,
+                                            decoration: BoxDecoration(
+                                              color: AppTheme.rimacRed,
+                                              shape: BoxShape.circle,
+                                              boxShadow: [
+                                                BoxShadow(
+                                                  color: AppTheme.rimacRed
+                                                      .withValues(alpha: 0.4),
+                                                  blurRadius: 8,
+                                                  offset: const Offset(0, 4),
+                                                ),
+                                              ],
+                                            ),
+                                            child: IconButton(
+                                              icon: const Icon(
+                                                Icons.send_rounded,
+                                                color: Colors.white,
+                                                size: 22,
+                                              ),
+                                              onPressed: state.isLoading
+                                                  ? null
+                                                  : () {
+                                                      final text =
+                                                          _textController.text
+                                                              .trim();
+                                                      if (text.isNotEmpty) {
+                                                        context
+                                                            .read<ChatCubit>()
+                                                            .sendMessage(text);
+                                                        _textController.clear();
+                                                      }
+                                                    },
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  );
+                                },
                                 chatMessageBuilder:
                                     (
                                       BuildContext ctx,
@@ -406,20 +539,7 @@ class _ChatViewState extends State<_ChatView> {
                               chatController: _chatController,
                               currentUserId: ChatCubit.kUserId,
 
-                              onMessageSend: (text) {
-                                if (state.isLoading) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      content: Text(
-                                        'Espera la respuesta antes de enviar otro mensaje',
-                                      ),
-                                    ),
-                                  );
-                                  return;
-                                }
-
-                                context.read<ChatCubit>().sendMessage(text);
-                              },
+                              onMessageSend: (text) {},
                               resolveUser: _resolveUser,
                             );
                           },
