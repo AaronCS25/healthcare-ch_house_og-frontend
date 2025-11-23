@@ -31,7 +31,7 @@ class _ChatViewState extends State<_ChatView> {
   final Set<String> _insertedMessageIds = {};
 
   final Map<String, String> _avatarUrls = {
-    ChatCubit.kUserId: 'assets/images/asistente_rimac.png',
+    ChatCubit.kUserId: 'assets/images/rimac_user.jpg',
     ChatCubit.kBotId: 'assets/images/asistente_rimac.png',
   };
 
@@ -123,16 +123,22 @@ class _ChatViewState extends State<_ChatView> {
                 Builder(
                   builder: (context) {
                     final brightness = MediaQuery.platformBrightnessOf(context);
-                    final baseChatTheme = brightness == Brightness.dark
+                    final isDark = brightness == Brightness.dark;
+
+                    final baseChatTheme = isDark
                         ? types.ChatTheme.dark()
                         : types.ChatTheme.light();
 
                     final chatTheme = baseChatTheme.copyWith(
                       colors: baseChatTheme.colors.copyWith(
                         primary: AppTheme.rimacRed,
-                        surfaceContainer: AppTheme.vibrantPink,
-                        surface: AppTheme.white,
-                        onSurface: AppTheme.darkGray,
+                        surface: isDark
+                            ? const Color(0xFF1f1f1f)
+                            : AppTheme.white,
+                        onSurface: isDark ? Colors.white : AppTheme.darkGray,
+                        surfaceContainer: isDark
+                            ? Colors.black
+                            : AppTheme.vibrantPink,
                       ),
                     );
 
@@ -187,7 +193,9 @@ class _ChatViewState extends State<_ChatView> {
 
                                       receivedBackgroundColor: isBot
                                           ? (isDarkMode
-                                                ? AppTheme.darkBgSecondary
+                                                ? Colors.white.withValues(
+                                                    alpha: 0.08,
+                                                  )
                                                 : AppTheme.mediumGray)
                                           : AppTheme.mediumGray,
 
