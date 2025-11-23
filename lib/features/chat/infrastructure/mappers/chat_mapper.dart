@@ -7,7 +7,7 @@ class ChatMapper {
   ChatMessageEntity fromLlmResponse(LlmResponseModel model) {
     return ChatMessageEntity(
       id: uuid.v4(),
-      text: model.message,
+      text: model.answer,
       isUser: false,
       createdAt: DateTime.now(),
     );

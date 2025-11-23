@@ -9,8 +9,8 @@ class ChatDatasourceImpl implements ChatDatasource {
   Future<ChatMessageEntity> sendMessage(String message) async {
     try {
       final response = await dio.post(
-        '/agent/route',
-        data: {'user_id': 'pochoni', 'message': message},
+        '/prod/chat',
+        data: {'question': message},
       );
       final llmResponse = LlmResponseModel.fromJson(response.data);
       final chatMessage = ChatMapper().fromLlmResponse(llmResponse);
