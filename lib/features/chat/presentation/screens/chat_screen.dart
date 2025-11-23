@@ -179,9 +179,16 @@ class _ChatViewState extends State<_ChatView> {
                               builders: types.Builders(
                                 chatAnimatedListBuilder:
                                     (context, itemBuilder) {
+                                      final composerHeight =
+                                          48 +
+                                          16 +
+                                          16 +
+                                          MediaQuery.of(context).padding.bottom;
+
                                       return types.ChatAnimatedList(
                                         itemBuilder: itemBuilder,
                                         topPadding: 20,
+                                        bottomPadding: composerHeight,
                                       );
                                     },
                                 composerBuilder: (context) {
